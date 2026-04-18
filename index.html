@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily GitHub - 每日开源推荐</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/styles/github-dark.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+  <style>
+    /* ============================================================
+       CSS Variables / Design Tokens
+       ============================================================ */
+    :root {
+      --sidebar-width: 300px;
+      --sidebar-bg: #0f172a;
+      --sidebar-text: #cbd5e1;
+      --sidebar-active: #6366f1;
+      --sidebar-active-bg: rgba(99, 102, 241, 0.12);
+      --sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+      --sidebar-border: rgba(255, 255, 255, 0.06);
+
+      --content-bg: #ffffff;
+      --content-text: #1e293b;
+      --content-secondary: #64748b;
+      --content-border: #e2e8f0;
+
+      --heading-color: #0f172a;
+      --link-color: #6366f1;
+      --link-hover: #4f46e5;
+
+      --code-bg: #f8fafc;
+      --code-border: #e2e8f0;
+      --inline-code-bg: #f1f5f9;
+      --inline-code-text: #e11d48;
+
+      --table-header-bg: #f8fafc;
+      --table-border: #e2e8f0;
+      --table-stripe: #fafbfc;
+
+      --blockquote-bg: #f0f4ff;
+      --blockquote-border: #6366f1;
+      --blockquote-text: #475569;
+
+      --badge-bg: #eef2ff;
+      --badge-text: #4338ca;
+
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+
+      --transition: 200ms ease;
+    }
+
+    /* ============================================================
+       Reset & Base
+       ============================================================ */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--content-text);
+      background: var(--content-bg);
+      line-height: 1.7;
+      display: flex;
+      min-height: 100dvh;
+    }
+
+    /* ============================================================
+       Sidebar
+       ============================================================ */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: var(--sidebar-width);
+      height: 100dvh;
+      background: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: transform var(--transition);
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .sidebar-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #f1f5f9;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-header h1 .logo-icon {
+      width: 28px;
+      height: 28px;
+      background: var(--sidebar-active);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-header p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .sidebar-search {
+      padding: 12px 20px;
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-sm);
+      color: #e2e8f0;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color var(--transition), background var(--transition);
+    }
+
+    .sidebar-search input::placeholder {
+      color: #64748b;
+    }
+
+    .sidebar-search input:focus {
+      border-color: var(--sidebar-active);
+      background: rgba(255,255,255,0.1);
+    }
+
+    .date-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+
+    .date-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .date-list::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.15);
+      border-radius: 2px;
+    }
+
+    .date-group-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 12px 8px 6px;
+    }
+
+    .date-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background var(--transition);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .date-item:hover {
+      background: var(--sidebar-hover-bg);
+    }
+
+    .date-item.active {
+      background: var(--sidebar-active-bg);
+      color: #c7d2fe;
+    }
+
+    .date-item.active .date-day {
+      color: var(--sidebar-active);
+    }
+
+    .date-day {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+      min-width: 28px;
+    }
+
+    .date-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .date-full {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .date-weekday {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .date-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--sidebar-active);
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .date-item.active .date-dot {
+      opacity: 1;
+    }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--sidebar-border);
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* ============================================================
+       Mobile Toggle
+       ============================================================ */
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 200;
+      width: 44px;
+      height: 44px;
+      background: var(--sidebar-bg);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-md);
+      color: #f1f5f9;
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .mobile-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 90;
+    }
+
+    /* ============================================================
+       Main Content
+       ============================================================ */
+    .main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-height: 100dvh;
+    }
+
+    .content-wrapper {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 48px 80px;
+    }
+
+    /* ============================================================
+       Welcome / Empty State
+       ============================================================ */
+    .welcome-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(99,102,241,0.3);
+    }
+
+    .welcome-state h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin-bottom: 8px;
+    }
+
+    .welcome-state p {
+      font-size: 15px;
+      color: var(--content-secondary);
+      max-width: 400px;
+      line-height: 1.6;
+    }
+
+    /* ============================================================
+       Loading State
+       ============================================================ */
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 40vh;
+      gap: 16px;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--content-border);
+      border-top-color: var(--sidebar-active);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-state p {
+      font-size: 14px;
+      color: var(--content-secondary);
+    }
+
+    /* ============================================================
+       Markdown Content Styling
+       ============================================================ */
+    .md-body {
+      animation: fadeIn 300ms ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .md-body h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin: 0 0 8px;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--content-border);
+    }
+
+    .md-body h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin: 40px 0 16px;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+    }
+
+    .md-body h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--heading-color);
+      margin: 32px 0 12px;
+      line-height: 1.4;
+    }
+
+    .md-body h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--heading-color);
+      margin: 24px 0 8px;
+    }
+
+    .md-body p {
+      margin: 0 0 16px;
+      color: var(--content-text);
+    }
+
+    .md-body a {
+      color: var(--link-color);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color var(--transition);
+    }
+
+    .md-body a:hover {
+      color: var(--link-hover);
+      text-decoration: underline;
+    }
+
+    .md-body a:focus-visible {
+      outline: 2px solid var(--sidebar-active);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    /* Blockquotes - used for project descriptions */
+    .md-body blockquote {
+      margin: 0 0 16px;
+      padding: 12px 16px;
+      background: var(--blockquote-bg);
+      border-left: 4px solid var(--blockquote-border);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      color: var(--blockquote-text);
+      font-size: 15px;
+    }
+
+    .md-body blockquote p {
+      margin: 0;
+      color: inherit;
+    }
+
+    /* Tables - project info cards */
+    .md-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 16px;
+      font-size: 14px;
+      border: 1px solid var(--table-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .md-body thead {
+      background: var(--table-header-bg);
+    }
+
+    .md-body th {
+      padding: 10px 16px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--heading-color);
+      border-bottom: 2px solid var(--table-border);
+      font-size: 13px;
+    }
+
+    .md-body td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--table-border);
+      color: var(--content-text);
+    }
+
+    .md-body tbody tr:nth-child(even) {
+      background: var(--table-stripe);
+    }
+
+    .md-body tbody tr:hover {
+      background: #f0f4ff;
+    }
+
+    .md-body tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Lists */
+    .md-body ul, .md-body ol {
+      margin: 0 0 16px;
+      padding-left: 24px;
+    }
+
+    .md-body li {
+      margin-bottom: 6px;
+      line-height: 1.6;
+    }
+
+    .md-body li::marker {
+      color: var(--sidebar-active);
+    }
+
+    /* Code */
+    .md-body code {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 0.875em;
+    }
+
+    .md-body :not(pre) > code {
+      background: var(--inline-code-bg);
+      color: var(--inline-code-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+
+    .md-body pre {
+      margin: 0 0 16px;
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      border: 1px solid var(--code-border);
+    }
+
+    .md-body pre code {
+      display: block;
+      padding: 16px;
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    /* Horizontal rule - project separator */
+    .md-body hr {
+      border: none;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--content-border), transparent);
+      margin: 32px 0;
+    }
+
+    /* Strong / Bold */
+    .md-body strong {
+      font-weight: 600;
+      color: var(--heading-color);
+    }
+
+    /* Images */
+    .md-body img {
+      max-width: 100%;
+      height: auto;
+      border-radius: var(--radius-md);
+      margin: 8px 0;
+    }
+
+    /* ============================================================
+       Project Card Enhancement
+       ============================================================ */
+    .md-body h3 + blockquote {
+      margin-top: 8px;
+    }
+
+    .md-body h3 + blockquote + table {
+      margin-top: 8px;
+    }
+
+    /* Star rating visual enhancement */
+    .md-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ============================================================
+       Responsive
+       ============================================================ */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-toggle {
+        display: flex;
+      }
+
+      .mobile-overlay.open {
+        display: block;
+      }
+
+      .main {
+        margin-left: 0;
+      }
+
+      .content-wrapper {
+        padding: 24px 16px 60px;
+      }
+
+      .md-body h1 {
+        font-size: 22px;
+      }
+
+      .md-body h2 {
+        font-size: 18px;
+      }
+
+      .md-body h3 {
+        font-size: 16px;
+      }
+
+      .md-body table {
+        font-size: 13px;
+      }
+
+      .md-body th, .md-body td {
+        padding: 8px 10px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content-wrapper {
+        padding: 16px 12px 48px;
+      }
+    }
+
+    /* ============================================================
+       Print
+       ============================================================ */
+    @media print {
+      .sidebar, .mobile-toggle {
+        display: none;
+      }
+      .main {
+        margin-left: 0;
+      }
+    }
+
+    /* ============================================================
+       Accessibility
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Skip link */
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: 0;
+      padding: 8px 16px;
+      background: var(--sidebar-active);
+      color: white;
+      z-index: 999;
+      font-size: 14px;
+      border-radius: 0 0 var(--radius-sm) 0;
+    }
+
+    .skip-link:focus {
+      top: 0;
+    }
+
+    /* ============================================================
+       Error State
+       ============================================================ */
+    .error-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 40vh;
+      text-align: center;
+    }
+
+    .error-state .error-icon {
+      width: 56px;
+      height: 56px;
+      background: #fef2f2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+
+    .error-state h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--heading-color);
+      margin-bottom: 8px;
+    }
+
+    .error-state p {
+      font-size: 14px;
+      color: var(--content-secondary);
+    }
+
+    .retry-btn {
+      margin-top: 16px;
+      padding: 8px 20px;
+      background: var(--sidebar-active);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background var(--transition);
+    }
+
+    .retry-btn:hover {
+      background: var(--link-hover);
+    }
+
+    .retry-btn:focus-visible {
+      outline: 2px solid var(--sidebar-active);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main-content" class="skip-link">跳到主要内容</a>
+
+  <!-- Mobile Toggle -->
+  <button class="mobile-toggle" id="mobileToggle" aria-label="打开侧边栏">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" id="mobileOverlay"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="日期导航">
+    <div class="sidebar-header">
+      <h1>
+        <span class="logo-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+        </span>
+        Daily GitHub
+      </h1>
+      <p>每日开源项目推荐</p>
+    </div>
+
+    <div class="sidebar-search">
+      <input type="search" id="searchInput" placeholder="搜索日期..." aria-label="搜索日期">
+    </div>
+
+    <div class="date-list" id="dateList" role="list">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="sidebar-footer">
+      Powered by LLM & GitHub
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main" id="main-content">
+    <div class="content-wrapper" id="contentWrapper">
+      <!-- Welcome State (default) -->
+      <div class="welcome-state" id="welcomeState">
+        <div class="welcome-icon" aria-hidden="true">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+          </svg>
+        </div>
+        <h2>每日 GitHub 开源推荐</h2>
+        <p>从左侧选择一个日期查看当天的推荐项目，发现值得关注的开源项目。</p>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // ============================================================
+    // App State
+    // ============================================================
+    let allDates = [];
+    let currentDate = null;
+
+    // ============================================================
+    // Markdown Config
+    // ============================================================
+    marked.setOptions({
+      gfm: true,
+      breaks: false,
+      highlight: function(code, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(code, { language: lang }).value;
+          } catch (e) {}
+        }
+        return hljs.highlightAuto(code).value;
+      }
+    });
+
+    // ============================================================
+    // API Calls
+    // ============================================================
+    async function fetchDates() {
+      const res = await fetch('/api/dates');
+      if (!res.ok) throw new Error('Failed to fetch dates');
+      return await res.json();
+    }
+
+    async function fetchContent(date) {
+      const res = await fetch(`/api/content/${date}`);
+      if (!res.ok) throw new Error('Failed to fetch content');
+      return await res.text();
+    }
+
+    // ============================================================
+    // Date Formatting
+    // ============================================================
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+
+    function parseDate(dateStr) {
+      const [y, m, d] = dateStr.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatDateItem(dateStr) {
+      const date = parseDate(dateStr);
+      return {
+        day: date.getDate(),
+        month: months[date.getMonth()],
+        weekday: `周${weekdays[date.getDay()]}`,
+        full: `${date.getFullYear()}年${date.getMonth()+1}月${date.getDate()}日`,
+        yearMonth: `${date.getFullYear()}年${date.getMonth()+1}月`
+      };
+    }
+
+    // ============================================================
+    // Render Date List
+    // ============================================================
+    function renderDateList(dates, filter = '') {
+      const container = document.getElementById('dateList');
+      container.innerHTML = '';
+
+      const filtered = filter
+        ? dates.filter(d => d.includes(filter))
+        : dates;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="padding: 24px 8px; text-align: center; color: #64748b; font-size: 13px;">
+            ${dates.length === 0 ? '暂无推荐内容' : '没有匹配的日期'}
+          </div>
+        `;
+        return;
+      }
+
+      // Group by year-month
+      let currentGroup = '';
+      filtered.forEach(dateStr => {
+        const info = formatDateItem(dateStr);
+        const group = info.yearMonth;
+
+        if (group !== currentGroup) {
+          currentGroup = group;
+          const label = document.createElement('div');
+          label.className = 'date-group-label';
+          label.textContent = group;
+          container.appendChild(label);
+        }
+
+        const item = document.createElement('div');
+        item.className = `date-item${dateStr === currentDate ? ' active' : ''}`;
+        item.setAttribute('role', 'listitem');
+        item.setAttribute('tabindex', '0');
+        item.setAttribute('aria-label', `${info.full} ${info.weekday}`);
+        item.innerHTML = `
+          <span class="date-day">${info.day}</span>
+          <span class="date-meta">
+            <span class="date-full">${info.full}</span>
+            <span class="date-weekday">${info.weekday}</span>
+          </span>
+          <span class="date-dot" aria-hidden="true"></span>
+        `;
+
+        item.addEventListener('click', () => loadContent(dateStr));
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            loadContent(dateStr);
+          }
+        });
+
+        container.appendChild(item);
+      });
+    }
+
+    // ============================================================
+    // Load & Render Content
+    // ============================================================
+    async function loadContent(date) {
+      currentDate = date;
+
+      // Update sidebar active state
+      document.querySelectorAll('.date-item').forEach(item => {
+        const info = formatDateItem(date);
+        item.classList.toggle('active',
+          item.querySelector('.date-full')?.textContent === info.full
+        );
+      });
+
+      // Close mobile sidebar
+      closeSidebar();
+
+      const wrapper = document.getElementById('contentWrapper');
+
+      // Show loading
+      wrapper.innerHTML = `
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>加载中...</p>
+        </div>
+      `;
+
+      try {
+        const md = await fetchContent(date);
+        const html = marked.parse(md);
+        wrapper.innerHTML = `<div class="md-body">${html}</div>`;
+
+        // Apply syntax highlighting to any unprocessed code blocks
+        wrapper.querySelectorAll('pre code').forEach(block => {
+          hljs.highlightElement(block);
+        });
+
+        // Make external links open in new tab
+        wrapper.querySelectorAll('a[href^="http"]').forEach(link => {
+          link.setAttribute('target', '_blank');
+          link.setAttribute('rel', 'noopener noreferrer');
+        });
+
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      } catch (err) {
+        wrapper.innerHTML = `
+          <div class="error-state">
+            <div class="error-icon" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+            </div>
+            <h3>加载失败</h3>
+            <p>无法加载 ${date} 的内容</p>
+            <button class="retry-btn" onclick="loadContent('${date}')">重试</button>
+          </div>
+        `;
+      }
+    }
+
+    // ============================================================
+    // Mobile Sidebar
+    // ============================================================
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('mobileOverlay').classList.add('open');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('mobileOverlay').classList.remove('open');
+    }
+
+    document.getElementById('mobileToggle').addEventListener('click', openSidebar);
+    document.getElementById('mobileOverlay').addEventListener('click', closeSidebar);
+
+    // ============================================================
+    // Search Filter
+    // ============================================================
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      renderDateList(allDates, e.target.value);
+    });
+
+    // ============================================================
+    // Keyboard: Escape to close sidebar
+    // ============================================================
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSidebar();
+    });
+
+    // ============================================================
+    // Initialize
+    // ============================================================
+    async function init() {
+      try {
+        allDates = await fetchDates();
+        renderDateList(allDates);
+
+        // Auto-load the most recent date
+        if (allDates.length > 0) {
+          loadContent(allDates[0]);
+        }
+      } catch (err) {
+        console.error('Failed to init:', err);
+        document.getElementById('dateList').innerHTML = `
+          <div style="padding: 24px 8px; text-align: center; color: #ef4444; font-size: 13px;">
+            加载日期列表失败
+          </div>
+        `;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
