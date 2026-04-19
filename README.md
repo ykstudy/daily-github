@@ -6,7 +6,10 @@
 
 ```
 daily-github/
-├── main.go        # Go 主程序（生成 + 服务）
+├── cmd/
+│   └── server/
+│       └── main.go    # 服务入口（Web + MCP）
+├── internal/       # 内部实现（config、storage、service、mcp 等）
 ├── go.mod         # Go 模块定义
 ├── index.html     # Web 浏览页面
 ├── data/          # 存放每日推荐 MD 文件
@@ -37,7 +40,7 @@ export OPENAI_API_KEY="your-api-key"
 ### 2. 运行
 
 ```bash
-go run main.go
+go run ./cmd/server
 ```
 
 程序会：
@@ -45,8 +48,9 @@ go run main.go
 2. 如果不存在，抓取 GitHub Trending 的日榜、周榜、月榜作为主要推荐参考
 3. 结合当前通用推荐逻辑与历史去重约束，调用 LLM 生成
 4. 将当天推荐过的项目写入 `data/recommendation-history.json`
-3. 按配置的定时规则持续生成每日推荐
-4. 启动 Web 服务器（默认端口 18080）
+5. 按配置的定时规则持续生成每日推荐
+6. 启动 Web 服务器（默认端口 18080）
+7. 当 `MCP_ENABLED=true` 时，启动 MCP 服务（默认端口 18081，默认路径 `/mcp`）
 
 访问 http://localhost:18080 浏览推荐内容。
 
@@ -69,6 +73,10 @@ go run main.go
 | `SERVER_IDLE_TIMEOUT` | 否 | `120s` | HTTP 空闲超时 |
 | `SERVER_SHUTDOWN_TIMEOUT` | 否 | `15s` | 优雅停机超时 |
 | `PORT` | 否 | `18080` | Web 服务端口 |
+| `MCP_ENABLED` | 否 | `false` | 是否启用 MCP 服务 |
+| `MCP_PORT` | 否 | `18081` | MCP 服务端口 |
+| `MCP_PATH` | 否 | `/mcp` | MCP 服务路径 |
+| `MCP_BEARER_TOKEN` | 启用 MCP 时是 | - | MCP Bearer Token |
 
 优先级说明：系统环境变量 > `.env` 文件 > 代码默认值。
 
@@ -113,6 +121,7 @@ docker compose up -d --build
 
 - 页面首页：http://localhost:18080
 - 健康检查：http://localhost:18080/healthz
+- MCP readiness：http://localhost:18081/mcp/readyz（启用 MCP 时）
 
 如果部署到线上容器平台，建议至少配置：
 

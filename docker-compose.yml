@@ -9,6 +9,7 @@ services:
       - .env
     ports:
       - "18080:18080"
+      - "18081:18081"
     volumes:
       - ./data:/app/data
     healthcheck:
