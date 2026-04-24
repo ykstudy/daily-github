@@ -335,6 +335,387 @@
       line-height: 1.6;
     }
 
+    .welcome-state.today-empty-state {
+      align-items: stretch;
+      justify-content: flex-start;
+      min-height: auto;
+      text-align: left;
+      gap: 24px;
+      padding-top: 24px;
+    }
+
+    .welcome-copy {
+      max-width: 560px;
+    }
+
+    /* ============================================================
+       Generate Today Card
+       ============================================================ */
+    .floating-feedback {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid transparent;
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow-md);
+      animation: fadeIn 260ms ease;
+    }
+
+    .floating-feedback.success {
+      background: rgba(236, 253, 245, 0.94);
+      border-color: rgba(34, 197, 94, 0.2);
+      color: #166534;
+    }
+
+    .floating-feedback.error {
+      background: rgba(254, 242, 242, 0.96);
+      border-color: rgba(239, 68, 68, 0.18);
+      color: #b91c1c;
+    }
+
+    .floating-feedback.info {
+      background: rgba(239, 246, 255, 0.94);
+      border-color: rgba(59, 130, 246, 0.18);
+      color: #1d4ed8;
+    }
+
+    .floating-feedback button {
+      border: none;
+      background: transparent;
+      color: inherit;
+      font-size: 20px;
+      line-height: 1;
+      padding: 4px;
+      cursor: pointer;
+      border-radius: 999px;
+      font-family: inherit;
+    }
+
+    .today-action-card {
+      position: relative;
+      overflow: hidden;
+      padding: 26px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.24), transparent 34%),
+        radial-gradient(circle at bottom left, rgba(34, 197, 94, 0.18), transparent 28%),
+        linear-gradient(135deg, #0f172a 0%, #111827 48%, #1e293b 100%);
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+      isolation: isolate;
+    }
+
+    .today-action-card.compact {
+      padding: 22px;
+      margin-bottom: 24px;
+    }
+
+    .today-action-card::before {
+      content: '';
+      position: absolute;
+      inset: -35% auto auto -20%;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.38), transparent 70%);
+      filter: blur(10px);
+      animation: driftGlow 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .today-action-card::after {
+      content: '';
+      position: absolute;
+      inset: auto -10% -35% auto;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(34, 197, 94, 0.24), transparent 72%);
+      filter: blur(8px);
+      animation: driftGlow 9s ease-in-out infinite reverse;
+      pointer-events: none;
+    }
+
+    @keyframes driftGlow {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(12px, -10px, 0) scale(1.08); }
+    }
+
+    .today-action-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.92fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .today-action-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .today-action-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.34);
+      color: #bfdbfe;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+
+    .today-action-chip::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.65);
+      animation: pulseDot 1.8s ease-in-out infinite;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    .today-action-title {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: #f8fafc;
+    }
+
+    .today-action-card.compact .today-action-title {
+      font-size: 24px;
+    }
+
+    .today-action-description {
+      color: rgba(226, 232, 240, 0.8);
+      font-size: 15px;
+      line-height: 1.7;
+      max-width: 54ch;
+    }
+
+    .today-action-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .today-action-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.08);
+      color: #cbd5e1;
+      font-size: 13px;
+      border: 1px solid rgba(148, 163, 184, 0.14);
+    }
+
+    .today-action-side {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(15, 23, 42, 0.34);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+
+    .today-action-side h3 {
+      font-size: 14px;
+      color: #f8fafc;
+      margin-bottom: 8px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .today-action-side p {
+      font-size: 13px;
+      color: rgba(226, 232, 240, 0.72);
+      margin-bottom: 16px;
+      line-height: 1.6;
+      max-width: none;
+    }
+
+    .today-action-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .generate-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 52px;
+      padding: 14px 18px;
+      border: none;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      overflow: hidden;
+      background: linear-gradient(135deg, #38bdf8 0%, #6366f1 52%, #22c55e 100%);
+      box-shadow: 0 14px 32px rgba(37, 99, 235, 0.32);
+      transform: translateY(0) scale(1);
+      transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+      font-family: inherit;
+    }
+
+    .generate-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.26) 48%, transparent 76%);
+      transform: translateX(-140%);
+      animation: shimmerSweep 2.8s ease-in-out infinite;
+    }
+
+    @keyframes shimmerSweep {
+      0% { transform: translateX(-150%); }
+      55%, 100% { transform: translateX(160%); }
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 18px 36px rgba(59, 130, 246, 0.34);
+    }
+
+    .generate-btn:active:not(:disabled) {
+      transform: translateY(0) scale(0.985);
+    }
+
+    .generate-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.78;
+      box-shadow: none;
+    }
+
+    .generate-btn-label,
+    .generate-btn-icon {
+      position: relative;
+      z-index: 1;
+    }
+
+    .generate-btn-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .generate-btn.is-loading .generate-btn-icon {
+      border: 2px solid rgba(255,255,255,0.36);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .generate-btn.is-loading svg {
+      display: none;
+    }
+
+    .token-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .token-toggle-btn {
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(15, 23, 42, 0.24);
+      color: #e2e8f0;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      min-height: 44px;
+      font-family: inherit;
+    }
+
+    .token-toggle-btn:hover {
+      transform: translateY(-1px);
+      background: rgba(30, 41, 59, 0.54);
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .token-toggle-btn.subtle {
+      color: #94a3b8;
+    }
+
+    .token-panel {
+      display: grid;
+      gap: 10px;
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(15, 23, 42, 0.42);
+      border: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    .token-panel label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #93c5fd;
+      font-weight: 600;
+    }
+
+    .token-input-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .token-panel input {
+      width: 100%;
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.06);
+      color: #f8fafc;
+      font-size: 14px;
+      outline: none;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    .token-panel input::placeholder {
+      color: rgba(148, 163, 184, 0.72);
+    }
+
+    .token-panel input:focus {
+      border-color: rgba(56, 189, 248, 0.54);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+    }
+
+    .token-panel small {
+      color: rgba(226, 232, 240, 0.62);
+      line-height: 1.5;
+      font-size: 12px;
+    }
+
     /* ============================================================
        Loading State
        ============================================================ */
@@ -602,6 +983,32 @@
         padding: 24px 16px 60px;
       }
 
+      .welcome-state.today-empty-state {
+        padding-top: 52px;
+      }
+
+      .today-action-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .today-action-card,
+      .today-action-card.compact {
+        padding: 20px;
+        border-radius: 22px;
+      }
+
+      .today-action-side {
+        padding: 16px;
+      }
+
+      .token-input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .floating-feedback {
+        align-items: flex-start;
+      }
+
       .md-body h1 {
         font-size: 22px;
       }
@@ -626,6 +1033,14 @@
     @media (max-width: 480px) {
       .content-wrapper {
         padding: 16px 12px 48px;
+      }
+
+      .today-action-title {
+        font-size: 22px;
+      }
+
+      .today-action-description {
+        font-size: 14px;
       }
     }
 
@@ -792,6 +1207,16 @@
     // ============================================================
     let allDates = [];
     let currentDate = null;
+    let todayStatus = null;
+    let currentView = 'welcome';
+    let currentContentHtml = '';
+    let currentErrorDate = '';
+    let generateInFlight = false;
+    let tokenFormVisible = false;
+    let generationFeedback = null;
+    let generationFeedbackTimer = null;
+    let lastSearchTerm = '';
+    let manualTriggerToken = localStorage.getItem('dailyGithub.manualTriggerToken') || '';
 
     // ============================================================
     // Markdown Config
@@ -813,15 +1238,37 @@
     // API Calls
     // ============================================================
     async function fetchDates() {
-      const res = await fetch('/api/dates');
+      const res = await fetch('daily-github/api/dates');
       if (!res.ok) throw new Error('Failed to fetch dates');
       return await res.json();
     }
 
+    async function fetchTodayStatus() {
+      const res = await fetch('daily-github/api/today-status');
+      if (!res.ok) throw new Error('Failed to fetch today status');
+      return await res.json();
+    }
+
     async function fetchContent(date) {
-      const res = await fetch(`/api/content/${date}`);
+      const res = await fetch(`daily-github/api/content/${date}`);
       if (!res.ok) throw new Error('Failed to fetch content');
       return await res.text();
+    }
+
+    async function requestGenerateToday(date, token) {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) {
+        headers['X-Trigger-Token'] = token;
+      }
+
+      const res = await fetch('daily-github/api/generate', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ date })
+      });
+
+      const payload = await res.json().catch(() => ({}));
+      return { res, payload };
     }
 
     // ============================================================
@@ -833,6 +1280,15 @@
     function parseDate(dateStr) {
       const [y, m, d] = dateStr.split('-').map(Number);
       return new Date(y, m - 1, d);
+    }
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
     }
 
     function formatDateItem(dateStr) {
@@ -882,6 +1338,7 @@
 
         const item = document.createElement('div');
         item.className = `date-item${dateStr === currentDate ? ' active' : ''}`;
+        item.dataset.date = dateStr;
         item.setAttribute('role', 'listitem');
         item.setAttribute('tabindex', '0');
         item.setAttribute('aria-label', `${info.full} ${info.weekday}`);
@@ -906,67 +1363,361 @@
       });
     }
 
-    // ============================================================
-    // Load & Render Content
-    // ============================================================
-    async function loadContent(date) {
-      currentDate = date;
-
-      // Update sidebar active state
+    function syncSidebarActiveState() {
       document.querySelectorAll('.date-item').forEach(item => {
-        const info = formatDateItem(date);
-        item.classList.toggle('active',
-          item.querySelector('.date-full')?.textContent === info.full
-        );
+        item.classList.toggle('active', item.dataset.date === currentDate);
       });
+    }
 
-      // Close mobile sidebar
-      closeSidebar();
+    function setGenerationFeedback(type, text, autoDismiss = type !== 'info') {
+      generationFeedback = { type, text };
+      if (generationFeedbackTimer) {
+        clearTimeout(generationFeedbackTimer);
+        generationFeedbackTimer = null;
+      }
+      if (autoDismiss) {
+        generationFeedbackTimer = window.setTimeout(() => {
+          generationFeedback = null;
+          renderCurrentView();
+        }, 4600);
+      }
+    }
 
-      const wrapper = document.getElementById('contentWrapper');
+    function dismissGenerationFeedback() {
+      generationFeedback = null;
+      if (generationFeedbackTimer) {
+        clearTimeout(generationFeedbackTimer);
+        generationFeedbackTimer = null;
+      }
+      renderCurrentView();
+    }
 
-      // Show loading
-      wrapper.innerHTML = `
+    function renderFeedbackToast() {
+      if (!generationFeedback) {
+        return '';
+      }
+
+      const role = generationFeedback.type === 'error' ? 'alert' : 'status';
+      return `
+        <div class="floating-feedback ${generationFeedback.type}" role="${role}" aria-live="polite">
+          <span>${escapeHTML(generationFeedback.text)}</span>
+          <button type="button" aria-label="关闭提示" onclick="dismissGenerationFeedback()">×</button>
+        </div>
+      `;
+    }
+
+    function renderTodayActionCard(compact = false) {
+      if (!todayStatus || todayStatus.exists) {
+        return '';
+      }
+
+      const tokenReady = manualTriggerToken.trim().length > 0;
+      const generationEnabled = todayStatus.generationEnabled;
+      const buttonDisabled = generateInFlight || !generationEnabled;
+      const actionLabel = generateInFlight
+        ? '正在生成今日推荐...'
+        : generationEnabled
+          ? '生成今日推荐'
+          : '服务端未启用主动生成';
+      const description = generationEnabled
+        ? `服务端今天是 ${todayStatus.date}，当前还没有推荐内容。你可以直接从页面发起一次补生成，完成后会自动载入最新结果。`
+        : `服务端今天是 ${todayStatus.date}，但当前部署没有开启网页主动生成能力。你仍然可以查看已有历史内容。`;
+      const actionHint = generationEnabled
+        ? (todayStatus.tokenRequired
+            ? (tokenReady ? '已记住触发令牌，可以直接发起生成。' : '首次触发前需要填写手动生成令牌。')
+            : '点击后会立刻补生成今日推荐。')
+        : '如需启用，请在服务端配置 MANUAL_TRIGGER_TOKEN。';
+
+      return `
+        <section class="today-action-card${compact ? ' compact' : ''}" aria-labelledby="todayActionTitle">
+          <div class="today-action-grid">
+            <div class="today-action-copy">
+              <span class="today-action-chip">Today Missing</span>
+              <h2 class="today-action-title" id="todayActionTitle">今日推荐还没到位，随时可以补一份新的。</h2>
+              <p class="today-action-description">${escapeHTML(description)}</p>
+              <div class="today-action-meta">
+                <span class="today-action-pill">服务端日期 ${escapeHTML(todayStatus.date)}</span>
+                <span class="today-action-pill">${todayStatus.tokenRequired ? '需要手动触发令牌' : '可直接从页面触发'}</span>
+              </div>
+            </div>
+
+            <div class="today-action-side">
+              <h3>立即补生成</h3>
+              <p>${escapeHTML(actionHint)}</p>
+              <div class="today-action-actions">
+                <button
+                  type="button"
+                  class="generate-btn${generateInFlight ? ' is-loading' : ''}"
+                  onclick="handleGenerateToday()"
+                  ${buttonDisabled ? 'disabled' : ''}
+                  aria-busy="${generateInFlight ? 'true' : 'false'}"
+                >
+                  <span class="generate-btn-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 3v6"></path>
+                      <path d="M12 15v6"></path>
+                      <path d="m5.64 5.64 4.24 4.24"></path>
+                      <path d="m14.12 14.12 4.24 4.24"></path>
+                      <path d="M3 12h6"></path>
+                      <path d="M15 12h6"></path>
+                      <path d="m5.64 18.36 4.24-4.24"></path>
+                      <path d="m14.12 9.88 4.24-4.24"></path>
+                    </svg>
+                  </span>
+                  <span class="generate-btn-label">${escapeHTML(actionLabel)}</span>
+                </button>
+
+                ${todayStatus.tokenRequired ? `
+                  <div class="token-actions">
+                    <button type="button" class="token-toggle-btn" onclick="toggleTokenForm()">${tokenFormVisible ? '收起令牌面板' : (tokenReady ? '更新令牌' : '填写令牌')}</button>
+                    ${tokenReady ? '<button type="button" class="token-toggle-btn subtle" onclick="clearManualToken()">清除已记住令牌</button>' : ''}
+                  </div>
+                ` : ''}
+
+                ${todayStatus.tokenRequired && tokenFormVisible ? `
+                  <div class="token-panel">
+                    <label for="manualTokenInput">手动触发令牌</label>
+                    <div class="token-input-row">
+                      <input
+                        id="manualTokenInput"
+                        type="password"
+                        value="${escapeHTML(manualTriggerToken)}"
+                        oninput="updateManualToken(this.value)"
+                        placeholder="输入 MANUAL_TRIGGER_TOKEN"
+                        autocomplete="off"
+                      >
+                      <button type="button" class="token-toggle-btn" onclick="saveTokenAndGenerate()">保存并生成</button>
+                    </div>
+                    <small>令牌只保存在当前浏览器本地，用于后续从页面手动触发今日生成。</small>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderWelcomeState() {
+      if (todayStatus && !todayStatus.exists) {
+        return `
+          <div class="welcome-state today-empty-state">
+            <div class="welcome-copy">
+              <div class="welcome-icon" aria-hidden="true">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                </svg>
+              </div>
+              <h2>今天还没有推荐内容</h2>
+              <p>可以直接在页面里发起一次“今日推荐”补生成。生成完成后，左侧日期列表会自动刷新并打开最新内容。</p>
+            </div>
+            ${renderTodayActionCard(false)}
+          </div>
+        `;
+      }
+
+      return `
+        <div class="welcome-state" id="welcomeState">
+          <div class="welcome-icon" aria-hidden="true">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+            </svg>
+          </div>
+          <h2>每日 GitHub 开源推荐</h2>
+          <p>从左侧选择一个日期查看当天的推荐项目，发现值得关注的开源项目。</p>
+        </div>
+      `;
+    }
+
+    function renderLoadingState() {
+      return `
         <div class="loading-state">
           <div class="spinner"></div>
           <p>加载中...</p>
         </div>
       `;
+    }
 
-      try {
-        const md = await fetchContent(date);
-        const html = marked.parse(md);
-        wrapper.innerHTML = `<div class="md-body">${html}</div>`;
+    function renderErrorState() {
+      return `
+        <div class="error-state">
+          <div class="error-icon" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </div>
+          <h3>加载失败</h3>
+          <p>无法加载 ${escapeHTML(currentErrorDate)} 的内容</p>
+          <button class="retry-btn" onclick="loadContent('${escapeHTML(currentErrorDate)}')">重试</button>
+        </div>
+      `;
+    }
 
-        // Apply syntax highlighting to any unprocessed code blocks
+    function renderCurrentView() {
+      const wrapper = document.getElementById('contentWrapper');
+      let html = renderFeedbackToast();
+
+      if (currentView === 'loading') {
+        html += renderLoadingState();
+      } else if (currentView === 'content') {
+        html += renderTodayActionCard(true);
+        html += `<div class="md-body">${currentContentHtml}</div>`;
+      } else if (currentView === 'error') {
+        html += renderErrorState();
+      } else {
+        html += renderWelcomeState();
+      }
+
+      wrapper.innerHTML = html;
+
+      if (currentView === 'content') {
         wrapper.querySelectorAll('pre code').forEach(block => {
           hljs.highlightElement(block);
         });
 
-        // Make external links open in new tab
         wrapper.querySelectorAll('a[href^="http"]').forEach(link => {
           link.setAttribute('target', '_blank');
           link.setAttribute('rel', 'noopener noreferrer');
         });
+      }
+
+      if (tokenFormVisible) {
+        requestAnimationFrame(() => {
+          const input = document.getElementById('manualTokenInput');
+          if (input) {
+            input.focus();
+            input.selectionStart = input.value.length;
+            input.selectionEnd = input.value.length;
+          }
+        });
+      }
+    }
+
+    function toggleTokenForm() {
+      tokenFormVisible = !tokenFormVisible;
+      renderCurrentView();
+    }
+
+    function updateManualToken(value) {
+      manualTriggerToken = value;
+    }
+
+    function clearManualToken() {
+      manualTriggerToken = '';
+      localStorage.removeItem('dailyGithub.manualTriggerToken');
+      tokenFormVisible = false;
+      setGenerationFeedback('info', '已清除本地保存的手动触发令牌。');
+      renderCurrentView();
+    }
+
+    async function saveTokenAndGenerate() {
+      const input = document.getElementById('manualTokenInput');
+      manualTriggerToken = input ? input.value.trim() : manualTriggerToken.trim();
+      await handleGenerateToday();
+    }
+
+    async function refreshDataState() {
+      const [dates, status] = await Promise.all([fetchDates(), fetchTodayStatus()]);
+      allDates = dates;
+      todayStatus = status;
+      renderDateList(allDates, lastSearchTerm);
+      syncSidebarActiveState();
+    }
+
+    async function handleGenerateToday() {
+      if (generateInFlight || !todayStatus || todayStatus.exists) {
+        return;
+      }
+
+      if (!todayStatus.generationEnabled) {
+        setGenerationFeedback('error', '服务端尚未启用页面主动生成。');
+        renderCurrentView();
+        return;
+      }
+
+      if (todayStatus.tokenRequired && !manualTriggerToken.trim()) {
+        tokenFormVisible = true;
+        setGenerationFeedback('info', '先填写手动触发令牌，然后再发起今日生成。', false);
+        renderCurrentView();
+        return;
+      }
+
+      generateInFlight = true;
+      setGenerationFeedback('info', '正在生成今日推荐，通常需要十几秒，请稍候。', false);
+      renderCurrentView();
+
+      try {
+        const token = manualTriggerToken.trim();
+        const { res, payload } = await requestGenerateToday(todayStatus.date, token);
+
+        if (res.status === 401) {
+          manualTriggerToken = '';
+          localStorage.removeItem('dailyGithub.manualTriggerToken');
+          tokenFormVisible = true;
+          setGenerationFeedback('error', '令牌校验失败，请重新输入后再试。');
+          return;
+        }
+
+        if (!res.ok) {
+          setGenerationFeedback('error', payload.error || '生成失败，请稍后再试。');
+          return;
+        }
+
+        if (token) {
+          localStorage.setItem('dailyGithub.manualTriggerToken', token);
+        }
+
+        tokenFormVisible = false;
+        await refreshDataState();
+
+        const targetDate = payload.date || todayStatus.date;
+        setGenerationFeedback(
+          'success',
+          payload.generated ? '今日推荐已生成，正在载入最新内容。' : '今日推荐已经存在，已为你打开。'
+        );
+
+        if (allDates.includes(targetDate)) {
+          await loadContent(targetDate);
+          return;
+        }
+
+        currentView = 'welcome';
+      } catch (err) {
+        setGenerationFeedback('error', '网络异常，生成请求未成功送达。');
+      } finally {
+        generateInFlight = false;
+        renderCurrentView();
+      }
+    }
+
+    // ============================================================
+    // Load & Render Content
+    // ============================================================
+    async function loadContent(date) {
+      currentDate = date;
+      syncSidebarActiveState();
+
+      // Close mobile sidebar
+      closeSidebar();
+
+      currentView = 'loading';
+      renderCurrentView();
+
+      try {
+        const md = await fetchContent(date);
+        currentContentHtml = marked.parse(md);
+        currentView = 'content';
+        renderCurrentView();
 
         // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
       } catch (err) {
-        wrapper.innerHTML = `
-          <div class="error-state">
-            <div class="error-icon" aria-hidden="true">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="12" y1="8" x2="12" y2="12"/>
-                <line x1="12" y1="16" x2="12.01" y2="16"/>
-              </svg>
-            </div>
-            <h3>加载失败</h3>
-            <p>无法加载 ${date} 的内容</p>
-            <button class="retry-btn" onclick="loadContent('${date}')">重试</button>
-          </div>
-        `;
+        currentErrorDate = date;
+        currentView = 'error';
+        renderCurrentView();
       }
     }
 
@@ -990,7 +1741,9 @@
     // Search Filter
     // ============================================================
     document.getElementById('searchInput').addEventListener('input', (e) => {
-      renderDateList(allDates, e.target.value);
+      lastSearchTerm = e.target.value;
+      renderDateList(allDates, lastSearchTerm);
+      syncSidebarActiveState();
     });
 
     // ============================================================
@@ -1005,13 +1758,17 @@
     // ============================================================
     async function init() {
       try {
-        allDates = await fetchDates();
-        renderDateList(allDates);
+        [allDates, todayStatus] = await Promise.all([fetchDates(), fetchTodayStatus()]);
+        renderDateList(allDates, lastSearchTerm);
 
         // Auto-load the most recent date
         if (allDates.length > 0) {
-          loadContent(allDates[0]);
+          await loadContent(allDates[0]);
+          return;
         }
+
+        currentView = 'welcome';
+        renderCurrentView();
       } catch (err) {
         console.error('Failed to init:', err);
         document.getElementById('dateList').innerHTML = `
@@ -1019,6 +1776,10 @@
             加载日期列表失败
           </div>
         `;
+
+        currentView = 'welcome';
+        setGenerationFeedback('error', '页面初始化失败，请刷新后重试。');
+        renderCurrentView();
       }
     }
 

@@ -52,7 +52,7 @@ go run ./cmd/server
 6. 启动 Web 服务器（默认端口 18080）
 7. 当 `MCP_ENABLED=true` 时，启动 MCP 服务（默认端口 18081，默认路径 `/mcp`）
 
-访问 http://localhost:18080 浏览推荐内容。
+访问 http://localhost:18080/daily-github/ 浏览推荐内容；根路径 `/` 也保留兼容，便于本地直连调试。
 
 ## 环境变量
 
@@ -87,8 +87,9 @@ go run ./cmd/server
 - **历史去重**：自动记录每天推荐过的 owner/repo，后续生成时避免重复推荐
 - **启动补偿**：`GENERATE_ON_STARTUP=true` 时，服务启动会先补一次当天文件
 - **失败重试**：生成失败后按 `GENERATE_RETRY_COUNT` 和 `GENERATE_RETRY_DELAY` 自动重试
-- **手动触发**：提供受 token 保护的 `/api/generate` 接口，可按需补生成指定日期
-- **健康检查**：提供 `/healthz` 端点，适合容器探针和负载均衡检查
+- **路径前缀兼容**：Web 页面、API 与健康检查同时支持 `/daily-github/...` 前缀，方便挂到 Nginx 子路径
+- **手动触发**：提供受 token 保护的 `/daily-github/api/generate` 接口，可按需补生成指定日期
+- **健康检查**：提供 `/daily-github/healthz` 端点，适合容器探针和负载均衡检查
 - **优雅停机**：收到 `SIGTERM` / `SIGINT` 后会先停止定时任务，再关闭 HTTP 服务
 - **持久化友好**：通过 `DATA_DIR` 控制数据目录，容器场景下建议挂载持久卷
 
@@ -111,6 +112,9 @@ docker run -d \
 	daily-github:latest
 ```
 
+镜像启动时会先修正 `DATA_DIR` 的目录权限，然后再以非 root 用户 `app` 运行主程序。
+如果使用 bind mount，建议仍然预先创建宿主机 `data` 目录；如果部署平台限制 `chown`，优先改用 Docker named volume。
+
 ### 使用 docker compose
 
 ```bash
@@ -119,8 +123,8 @@ docker compose up -d --build
 
 启动后可以通过以下地址检查服务：
 
-- 页面首页：http://localhost:18080
-- 健康检查：http://localhost:18080/healthz
+- 页面首页：http://localhost:18080/daily-github/
+- 健康检查：http://localhost:18080/daily-github/healthz
 - MCP readiness：http://localhost:18081/mcp/readyz（启用 MCP 时）
 
 如果部署到线上容器平台，建议至少配置：
@@ -141,7 +145,7 @@ docker compose up -d --build
 ```bash
 curl -X POST \
 	-H "X-Trigger-Token: your-secret-token" \
-	http://localhost:18080/api/generate
+	http://localhost:18080/daily-github/api/generate
 ```
 
 ### 生成指定日期
@@ -151,7 +155,7 @@ curl -X POST \
 	-H "Content-Type: application/json" \
 	-H "X-Trigger-Token: your-secret-token" \
 	-d '{"date":"2026-04-18"}' \
-	http://localhost:18080/api/generate
+	http://localhost:18080/daily-github/api/generate
 ```
 
 成功时返回 `generated` 或 `skipped`，失败时返回错误信息和已尝试次数。

@@ -1,4 +1,4 @@
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25.3-alpine3.22 AS builder
 
 WORKDIR /src
 
@@ -10,11 +10,11 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags="-s -w" -o /out/daily-github ./cmd/server
 
 
-FROM alpine:3.20
+FROM alpine:3.22
 
 WORKDIR /app
 
-RUN apk add --no-cache ca-certificates tzdata \
+RUN apk add --no-cache ca-certificates su-exec tzdata \
 	&& addgroup -S app \
 	&& adduser -S app -G app \
 	&& mkdir -p /app/data \
@@ -22,8 +22,9 @@ RUN apk add --no-cache ca-certificates tzdata \
 
 COPY --from=builder /out/daily-github /app/daily-github
 COPY --chown=app:app index.html /app/index.html
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-USER app
+RUN chmod 755 /usr/local/bin/docker-entrypoint.sh
 
 ENV PORT=18080 \
 	MCP_PORT=18081 \
@@ -48,4 +49,4 @@ VOLUME ["/app/data"]
 
 EXPOSE 18080 18081
 
-ENTRYPOINT ["/app/daily-github"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -28,6 +29,15 @@ import (
 type manualGenerateRequest struct {
 	Date string `json:"date"`
 }
+
+type todayStatusResponse struct {
+	Date              string `json:"date"`
+	Exists            bool   `json:"exists"`
+	GenerationEnabled bool   `json:"generationEnabled"`
+	TokenRequired     bool   `json:"tokenRequired"`
+}
+
+const webPathPrefix = "/daily-github"
 
 func main() {
 	if err := config.LoadDotEnv("../../.env"); err != nil {
@@ -153,8 +163,9 @@ func startScheduler(appConfig config.Config, generationService *service.Generati
 
 func newWebMux(appConfig config.Config, dateService *service.DateService, contentService *service.ContentService, generationService *service.GenerationService) http.Handler {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", serveIndex)
+	mux.HandleFunc("/", newIndexHandler(resolveIndexPath()))
 	mux.HandleFunc("/healthz", serveHealth)
+	mux.HandleFunc("/api/today-status", newTodayStatusHandler(appConfig, contentService))
 	mux.HandleFunc("/api/dates", func(w http.ResponseWriter, r *http.Request) {
 		result, err := dateService.ListDates("")
 		if err != nil {
@@ -180,15 +191,107 @@ func newWebMux(appConfig config.Config, dateService *service.DateService, conten
 	mux.HandleFunc("/api/generate", func(w http.ResponseWriter, r *http.Request) {
 		serveManualGenerate(appConfig, generationService, w, r)
 	})
-	return mux
+	return withPathPrefix(mux, webPathPrefix)
 }
 
-func serveIndex(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
+func withPathPrefix(handler http.Handler, prefix string) http.Handler {
+	normalized := normalizeRequestPathPrefix(prefix)
+	if normalized == "/" {
+		return handler
 	}
-	http.ServeFile(w, r, "../../index.html")
+
+	prefixedRoot := normalized + "/"
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.URL.Path == normalized:
+			http.Redirect(w, r, prefixedRoot, http.StatusPermanentRedirect)
+			return
+		case strings.HasPrefix(r.URL.Path, prefixedRoot):
+			clone := r.Clone(r.Context())
+			urlCopy := *r.URL
+			clone.URL = &urlCopy
+			clone.URL.Path = strings.TrimPrefix(r.URL.Path, normalized)
+			if clone.URL.Path == "" {
+				clone.URL.Path = "/"
+			}
+			if r.URL.RawPath != "" {
+				clone.URL.RawPath = strings.TrimPrefix(r.URL.RawPath, normalized)
+				if clone.URL.RawPath == "" {
+					clone.URL.RawPath = "/"
+				}
+			}
+			handler.ServeHTTP(w, clone)
+			return
+		default:
+			handler.ServeHTTP(w, r)
+		}
+	})
+}
+
+func normalizeRequestPathPrefix(prefix string) string {
+	trimmed := strings.TrimSpace(prefix)
+	if trimmed == "" || trimmed == "/" {
+		return "/"
+	}
+	if !strings.HasPrefix(trimmed, "/") {
+		trimmed = "/" + trimmed
+	}
+	return strings.TrimRight(trimmed, "/")
+}
+
+func newIndexHandler(indexPath string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/" {
+			http.NotFound(w, r)
+			return
+		}
+		http.ServeFile(w, r, indexPath)
+	}
+}
+
+func resolveIndexPath() string {
+	var candidates []string
+
+	if workingDir, err := os.Getwd(); err == nil {
+		candidates = append(candidates, filepath.Join(workingDir, "index.html"))
+	}
+	if executablePath, err := os.Executable(); err == nil {
+		candidates = append(candidates, filepath.Join(filepath.Dir(executablePath), "index.html"))
+	}
+
+	for _, candidate := range candidates {
+		fileInfo, err := os.Stat(candidate)
+		if err == nil && !fileInfo.IsDir() {
+			return candidate
+		}
+	}
+
+	return "index.html"
+}
+
+func newTodayStatusHandler(appConfig config.Config, contentService *service.ContentService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "仅支持 GET 请求"})
+			return
+		}
+
+		today := time.Now().In(appConfig.Location).Format("2006-01-02")
+		content, err := contentService.GetDailyContent(today)
+		if err != nil {
+			writeJSON(w, http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return
+		}
+
+		generationEnabled := strings.TrimSpace(appConfig.ManualTriggerToken) != ""
+		writeJSON(w, http.StatusOK, todayStatusResponse{
+			Date:              today,
+			Exists:            content.Exists,
+			GenerationEnabled: generationEnabled,
+			TokenRequired:     generationEnabled,
+		})
+	}
 }
 
 func serveHealth(w http.ResponseWriter, _ *http.Request) {

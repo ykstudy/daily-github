@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    # image: ykstudy/daily-github:latest
     container_name: daily-github
     restart: unless-stopped
     env_file:
@@ -18,3 +19,6 @@ services:
       timeout: 5s
       retries: 3
       start_period: 20s
+
+# docker build -t ykstudy/daily-github:latest .
+# docker push ykstudy/daily-github:latest

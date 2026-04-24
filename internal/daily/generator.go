@@ -136,9 +136,9 @@ func generateUserPrompt(date string, promptContext PromptContext) string {
 	var builder strings.Builder
 	builder.WriteString(fmt.Sprintf("请为 %s 生成一份每日 GitHub 开源项目推荐报告。\n\n", date))
 	builder.WriteString("## 本次推荐策略\n\n")
-	builder.WriteString("1. 请自行获取或参考 GitHub Trending 的日榜、周榜、月榜，将其作为本次推荐的重要候选来源。\n")
+	builder.WriteString("1. 请自行获取或参考 GitHub Trending 的日榜(https://github.com/trending)、周榜(https://github.com/trending?since=weekly)、月榜(https://github.com/trending?since=monthly)，将其作为本次推荐的重要候选来源。\n")
 	builder.WriteString("2. 优先选择近期在 GitHub 社区中热度明显上升、且客观上值得关注的真实项目。\n")
-	builder.WriteString("3. 允许补充 1-3 个没有出现在 Trending 中、但确实值得推荐的真实项目，用于保留更广泛的推荐逻辑。\n")
+	builder.WriteString("3. 允许补充 1-3 个没有出现在 Trending 中、但确实值得推荐的真实项目，最近讨论又比较多，用于保留更广泛的推荐逻辑。\n")
 	builder.WriteString("4. 如果无法确认某个项目是否来自 GitHub Trending，不要标注为 Trending 来源，应标注为补充推荐或基于公开信息参考。\n")
 	builder.WriteString("5. 绝对不要重复推荐历史中已经出现过的 owner/repo。\n\n")
 
@@ -249,8 +249,9 @@ func generateUserPrompt(date string, promptContext PromptContext) string {
 - 描述要客观专业，避免过度营销
 - Markdown 格式要规范，便于渲染
 - 每个项目之间用 --- 分隔
+- https://api.github.com/search/repositories?q=created:>%s&sort=stars&order=desc&per_page=10
 - 明确优先使用 Trending 日榜、周榜、月榜中的热门项目，但允许补充少量非 Trending 项目
-- 不要推荐任何已在历史去重名单中的 owner/repo`, date))
+- 不要推荐任何已在历史去重名单中的 owner/repo`, date, date))
 
 	return builder.String()
 }
